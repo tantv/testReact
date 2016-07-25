@@ -5,12 +5,15 @@ import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import ActionDelete from 'material-ui/svg-icons/action/delete-forever';
 import ActionAdd from 'material-ui/svg-icons/action/note-add';
+import ActionEdit from 'material-ui/svg-icons/action/settings';
 import {red500, yellow500, blue500} from 'material-ui/styles/colors';
 
 import Rebase from 're-base';
 import Loader from '../components/Loader';
 
-var base = Rebase.createClass('https://blazing-fire-266.firebaseio.com');
+import FbConfig from '../components/FbConfig';
+
+//var base = Rebase.createClass('https://blazing-fire-266.firebaseio.com');
 
 export default class ListSongs extends React.Component {
   constructor(props) {
@@ -24,14 +27,14 @@ export default class ListSongs extends React.Component {
       enableSelectAll: false,
       stripedRows: false,
       showRowHover: false,
-      deselectOnClickaway: false,
+      deselectOnClickaway: true,
       loading: true,
       songs: []
     };
   }
 
   componentDidMount() {
-    base.syncState('/items', {
+    FbConfig.syncState('/items', {
       context: this,
       state: 'songs',
       asArray: true,
@@ -45,27 +48,28 @@ export default class ListSongs extends React.Component {
   }
 
   _removeSong = (index) => {
-    console.log(index);
-    var arr = this.state.songs.concat([]);
-    arr.splice(index, 1);
-
-    /*
-     * Calling setState here will update the '/chats' ref on our Firebase.
-     * Notice that I'm also updating the 'show' state.  Because there is no
-     * binding to our 'show' state, it will update the local 'show' state normally,
-     * without going to Firebase.
-     */
+    var _songs = this.state.songs.concat([]);
+    _songs.splice(index, 1);
 
     this.setState({
-      songs: arr
+      songs: _songs
     });
   }
 
   _addSong = () => {
-    base.push('/items', {
-      data: {name: 'George - ' + Math.floor((Math.random() * 10) + 1), type: 'Grizzly'},
+    FbConfig.push('/items', {
+      data: {name: 'George - ' + Math.floor((Math.random() * 10) + 1), type: 'Grizzly' + Math.floor((Math.random() * 10) + 1)},
       then(){
         console.log('ADDED');
+      }
+    });
+  }
+
+  _editSong = (key) => {
+    FbConfig.post('/items/'+key, {
+      data: {name: 'George - update', type: 'Grizzly - update'},
+      then(){
+        console.log('EDITED');
       }
     });
   }
@@ -101,10 +105,11 @@ export default class ListSongs extends React.Component {
           >
             {this.state.songs.map( (song, index) => (
               <TableRow key={index} selected={song.selected}>
-                <TableRowColumn>{song.key}</TableRowColumn>
                 <TableRowColumn>{song.name}</TableRowColumn>
+                <TableRowColumn>{song.type}</TableRowColumn>
                 <TableRowColumn>
                   <ActionDelete color={red500} onTouchTap={this._removeSong.bind(this, index)} />
+                  <ActionEdit onTouchTap={this._editSong.bind(this, song.key)} />
                 </TableRowColumn>
               </TableRow>
               ))}
