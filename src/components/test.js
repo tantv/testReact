@@ -16,7 +16,7 @@ import FbConfig from '../components/FbConfig';
 
 
 // Get a reference to the storage service, which is used to create references in your storage bucket
-let storage = FbConfig.storage();
+var storage = FbConfig.storage();
 
 export default class ListSongs extends React.Component {
   constructor(props) {
@@ -32,11 +32,18 @@ export default class ListSongs extends React.Component {
       showRowHover: false,
       deselectOnClickaway: true,
       loading: true,
+      imgSrc: '',
       songs: []
     };
   }
 
   componentDidMount() {
+    storage.ref().child('Koala.jpg').getDownloadURL().then(url => {
+      this.setState({imgSrc: url});
+    }).catch(function(error) {
+      // Handle any errors
+    });
+
     FbConfig.syncState('/items', {
       context: this,
       state: 'songs',
@@ -71,6 +78,7 @@ export default class ListSongs extends React.Component {
     return (
       <div>
         {this.state.loading === true ? <Loader /> : ''}
+        <img src={this.state.imgSrc} />
         <Table
           fixedHeader={this.state.fixedHeader}
           selectable={this.state.selectable}

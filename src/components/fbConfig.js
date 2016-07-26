@@ -29,3 +29,5 @@ export default FbConfig;
 //       'songs': theNewState
 //     });
 // });
+
+//allow read, write: if request.auth != null;
