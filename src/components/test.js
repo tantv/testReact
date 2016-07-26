@@ -13,8 +13,6 @@ import Loader from '../components/Loader';
 
 import FbConfig from '../components/FbConfig';
 
-//var base = Rebase.createClass('https://blazing-fire-266.firebaseio.com');
-
 export default class ListSongs extends React.Component {
   constructor(props) {
     super(props);
@@ -47,12 +45,9 @@ export default class ListSongs extends React.Component {
     });
   }
 
-  _removeSong = (index) => {
-    var _songs = this.state.songs.concat([]);
-    _songs.splice(index, 1);
-
-    this.setState({
-      songs: _songs
+  _removeSong = (key) => {
+    FbConfig.database().ref('items/'+ key).remove().then(snapshot => {
+        console.log('DELETED')
     });
   }
 
@@ -73,6 +68,8 @@ export default class ListSongs extends React.Component {
       }
     });
   }
+
+  _nextPage = () => console.log('test');
 
   render() {
     return (
@@ -103,18 +100,19 @@ export default class ListSongs extends React.Component {
             showRowHover={this.state.showRowHover}
             stripedRows={this.state.stripedRows}
           >
-            {this.state.songs.map( (song, index) => (
-              <TableRow key={index} selected={song.selected}>
+            {this.state.songs.map( (song) => (
+              <TableRow key={song.key} selected={song.selected}>
                 <TableRowColumn>{song.name}</TableRowColumn>
                 <TableRowColumn>{song.type}</TableRowColumn>
                 <TableRowColumn>
-                  <ActionDelete color={red500} onTouchTap={this._removeSong.bind(this, index)} />
+                  <ActionDelete color={red500} onTouchTap={this._removeSong.bind(this, song.key)} />
                   <ActionEdit onTouchTap={this._editSong.bind(this, song.key)} />
                 </TableRowColumn>
               </TableRow>
               ))}
           </TableBody>
         </Table>
+        <h2 onTouchTap={this._nextPage.bind(this)}> next page </h2>
       </div>
     );
   }

@@ -10,3 +10,15 @@ var firebaseConfig = {
 var FbConfig = Rebase.createClass(firebaseConfig);
 
 export default FbConfig;
+
+// FbConfig.database().ref('items').once('value').then(snapshot => {
+//     //if you are using asArray
+//     var theNewState = [];
+//     snapshot.forEach(function (childSnapshot){
+//       var val = childSnapshot.val();
+//       theNewState.push(val);
+//     });
+//     this.setState({
+//       'songs': theNewState
+//     });
+// });
