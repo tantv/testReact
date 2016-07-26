@@ -9,23 +9,56 @@ import FbConfig from '../components/FbConfig';
 export default class AddNew extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {open: false};
+    this.state = {
+      open: false,
+      edited: false,
+      key: '',
+      name: '',
+      type: '',
+      textLabel: this.props.label
+    };
   }
 
-  handleOpen = () => this.setState({open: true});
+  handleOpen = (props) => {
+    this.setState({open: true});
+    if(this.props.song) {
+      this.setState({
+        edited: true,
+        key: this.props.song.key,
+        name: this.props.song.name,
+        type: this.props.song.type
+      })
+    }
+  }
 
-  handleClose = () => this.setState({open: false});
+  handleClose = () => {
+    this.setState({
+      edited: false,
+      open: false
+    });
+  }
 
   _addSong = () => {
-    FbConfig.push('/items', {
-      data: { 
-        name: this.refs.name.getValue(), 
-        type: this.refs.type.getValue()
-      },
-      then(){
-        console.log('ADDED');
-      }
-    });
+    var _data = {
+      name: this.refs.name.getValue(),
+      type: this.refs.type.getValue()
+    };
+
+    if(this.state.edited) {
+      FbConfig.post('/items/'+this.state.key, {
+        data: _data,
+        then(){
+          console.log('UPDATED');
+        }
+      });
+    } else {
+      FbConfig.push('/items', {
+        data: _data,
+        then(){
+          console.log('ADDED');
+        }
+      });
+    }
     this.handleClose();
   }
 
@@ -46,7 +79,7 @@ export default class AddNew extends React.Component {
 
     return (
       <div>
-        <FlatButton onTouchTap={this.handleOpen} label="Add New" />
+        <FlatButton onTouchTap={this.handleOpen} label={this.state.textLabel} />
         <Dialog
           title="Dialog With Actions"
           actions={actions}
@@ -56,18 +89,22 @@ export default class AddNew extends React.Component {
         >
 
           <TextField 
-            hintText="Name" 
+            hintText="Name"
+            defaultValue={this.state.name}
             fullWidth={true} 
-            errorText="This field is required"
-            ref="name"
-            />
+            ref="name" />
 
           <TextField 
-            hintText="Type" 
+            hintText="Type"
+            defaultValue={this.state.type}
             fullWidth={true} 
-            errorText="This field is required"
-            ref="type"
-            />
+            ref="type" />
+
+          <TextField 
+            hintText="Images"
+            fullWidth={true} 
+            type="file"
+            ref="images" />
 
         </Dialog>
       </div>

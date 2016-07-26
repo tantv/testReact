@@ -10,8 +10,13 @@ import {red500, yellow500, blue500} from 'material-ui/styles/colors';
 
 import Rebase from 're-base';
 import Loader from '../components/Loader';
+import AddNew from '../components/AddNew';
 
 import FbConfig from '../components/FbConfig';
+
+
+// Get a reference to the storage service, which is used to create references in your storage bucket
+let storage = FbConfig.storage();
 
 export default class ListSongs extends React.Component {
   constructor(props) {
@@ -60,15 +65,6 @@ export default class ListSongs extends React.Component {
     });
   }
 
-  _editSong = (key) => {
-    FbConfig.post('/items/'+key, {
-      data: {name: 'George - update', type: 'Grizzly - update'},
-      then(){
-        console.log('EDITED');
-      }
-    });
-  }
-
   _nextPage = () => console.log('test');
 
   render() {
@@ -106,7 +102,7 @@ export default class ListSongs extends React.Component {
                 <TableRowColumn>{song.type}</TableRowColumn>
                 <TableRowColumn>
                   <ActionDelete color={red500} onTouchTap={this._removeSong.bind(this, song.key)} />
-                  <ActionEdit onTouchTap={this._editSong.bind(this, song.key)} />
+                  <AddNew song={song} label="Edit" />
                 </TableRowColumn>
               </TableRow>
               ))}

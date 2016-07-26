@@ -23,7 +23,7 @@ export default class Header extends React.Component {
         <AppBar
   		    title="Home page"
   		    onLeftIconButtonTouchTap={this.handleToggle.bind(this)}
-          iconElementRight={<AddNew />}
+          iconElementRight={<AddNew label="Add new" />}
   		  />
 
 		    <Drawer
