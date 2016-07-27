@@ -12,6 +12,8 @@ import Loader from '../components/Loader';
 import AddNew from '../components/AddNew';
 import UploadImage from '../components/UploadImage';
 
+import Auths from '../components/Auths';
+
 import FbConfig from '../components/FbConfig';
 
 
@@ -68,6 +70,8 @@ export default class ListSongs extends React.Component {
     return (
       <div>
         {this.state.loading === true ? <Loader /> : ''}
+        <Auths />
+        <br />
         <UploadImage />
         <Table
           fixedHeader={this.state.fixedHeader}
