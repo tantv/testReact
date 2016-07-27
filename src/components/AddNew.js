@@ -5,6 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 
 import FbConfig from '../components/FbConfig';
+import UploadImage from '../components/UploadImage';
 
 export default class AddNew extends React.Component {
   constructor(props) {
@@ -100,11 +101,7 @@ export default class AddNew extends React.Component {
             fullWidth={true} 
             ref="type" />
 
-          <TextField 
-            hintText="Images"
-            fullWidth={true} 
-            type="file"
-            ref="images" />
+            <UploadImage />
 
         </Dialog>
       </div>

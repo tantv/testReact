@@ -8,15 +8,12 @@ import ActionAdd from 'material-ui/svg-icons/action/note-add';
 import ActionEdit from 'material-ui/svg-icons/action/settings';
 import {red500, yellow500, blue500} from 'material-ui/styles/colors';
 
-import Rebase from 're-base';
 import Loader from '../components/Loader';
 import AddNew from '../components/AddNew';
+import UploadImage from '../components/UploadImage';
 
 import FbConfig from '../components/FbConfig';
 
-
-// Get a reference to the storage service, which is used to create references in your storage bucket
-var storage = FbConfig.storage();
 
 export default class ListSongs extends React.Component {
   constructor(props) {
@@ -32,18 +29,11 @@ export default class ListSongs extends React.Component {
       showRowHover: false,
       deselectOnClickaway: true,
       loading: true,
-      imgSrc: '',
       songs: []
     };
   }
 
-  componentDidMount() {
-    storage.ref().child('Koala.jpg').getDownloadURL().then(url => {
-      this.setState({imgSrc: url});
-    }).catch(function(error) {
-      // Handle any errors
-    });
-
+  componentDidMount = () => {
     FbConfig.syncState('/items', {
       context: this,
       state: 'songs',
@@ -78,7 +68,7 @@ export default class ListSongs extends React.Component {
     return (
       <div>
         {this.state.loading === true ? <Loader /> : ''}
-        <img src={this.state.imgSrc} />
+        <UploadImage />
         <Table
           fixedHeader={this.state.fixedHeader}
           selectable={this.state.selectable}
