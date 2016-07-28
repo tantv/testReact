@@ -1,35 +1,50 @@
 import React from 'react';
-import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
 import FlatButton from 'material-ui/FlatButton';
 
+import Formsy from 'formsy-react';
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import RaisedButton from 'material-ui/RaisedButton';
+import MenuItem from 'material-ui/MenuItem';
+import { FormsyCheckbox, FormsyDate, FormsyRadio, FormsyRadioGroup,
+    FormsySelect, FormsyText, FormsyTime, FormsyToggle } from 'formsy-material-ui/lib';
+
+import ReactMaterialUiNotifications from '../components/ReactMaterialUiNotifications'
+import Message from 'material-ui/svg-icons/communication/message'
+import {deepOrange500} from 'material-ui/styles/colors'
+import moment from 'moment'
+
 import FbConfig from '../components/FbConfig';
 
-const style = {
-  padding: 40,
-};
+// Get the currently signed-in user
+FbConfig.auth().onAuthStateChanged((user) => {
+  if (user) {
+    console.log(user);
+    console.log('User is signed in.');
+  } else {
+    console.log('No user is signed in.');
+  }
+});
 
 export default class Auths extends React.Component {
   constructor(props) {
     super(props);
   }
 
-  componentDidMount = () => {
-    
-  }
+  signInWithEmail = (data) => {
+    //console.log(JSON.stringify(data, null, 4));
+    var _email = data.email;
+    var _password = data.password;
 
-  signInWithEmail = () => {
-    var email = this.refs.email.getValue();
-    var password = this.refs.password.getValue();
-
-    if (!email || !password) {
+    if (!_email || !_password) {
         return console.log('email and password required');
     }
 
     // Sign in user
-    FbConfig.auth().signInWithEmailAndPassword(email, password).then(() => {
+    FbConfig.auth().signInWithEmailAndPassword(_email, _password).then(() => {
             console.log('success');
-            this.refs.email.reset();
+            this._resetForm();
         }).catch(function(error) {
             var errorCode = error.code;
             var errorMessage = error.message;
@@ -52,15 +67,6 @@ export default class Auths extends React.Component {
                 break;
             }
     });
-
-    // Listen to auth state changes
-    FbConfig.auth().onAuthStateChanged((user) => {
-      if (user) {
-        console.log('User is signed in.');
-      } else {
-        console.log('No user is signed in.');
-      }
-    });
   }
 
   signOut = () => {
@@ -71,32 +77,91 @@ export default class Auths extends React.Component {
     });
   }  
 
+  _resetForm = () => {
+    this.refs.form.reset();
+  }
+
+  showNotification = () => {
+    console.log('xxxxxxxxxxx');
+    ReactMaterialUiNotifications.showNotification({
+      title: 'Title',
+      additionalText: `Some message to be displayed`,
+      icon: <Message />,
+      iconBadgeColor: deepOrange500,
+      overflowText: "joe@gmail.com",
+      timestamp: moment().format('h:mm A')
+    })
+  } 
+
+  styles = {
+    paperStyle: {
+      width: 500,
+      margin: 'auto',
+      padding: 20,
+    },
+    submitStyle: {
+      marginTop: 32,
+    },
+  }
+
+  errorMessages = {
+    emailError: "Please provide a valid email",
+    passwordError: "Please provide a password"
+  }
+
   render() {
+    let {paperStyle, switchStyle, submitStyle } = this.styles;
+    let { emailError, passwordError} = this.errorMessages;
     return (
+      <MuiThemeProvider muiTheme={getMuiTheme()}>
       <div>
-        <Paper 
-          style={style} 
-          zDepth={1}
-          children={
-            <div>
-                <TextField
-                  hintText="Email"
-                  fullWidth={true}
-                  ref="email"
-                /><br />
-                <TextField
-                  hintText="Password Field"
-                  floatingLabelText="Password"
-                  fullWidth={true}
-                  ref="password"
-                  type="password"
-                />
-                <FlatButton onTouchTap={this.signInWithEmail.bind()} label="SignIn" />
-                <FlatButton onTouchTap={this.signOut.bind()} label="SignOut" />
-            </div>
-          }
-         />
+        <Paper style={paperStyle}>
+          <Formsy.Form
+            ref="form"
+            onValidSubmit={this.signInWithEmail}
+          >
+            <FormsyText
+              name="email"
+              validations="isEmail"
+              validationError={emailError}
+              required
+              hintText="Email"
+              floatingLabelText="Your Email"
+              fullWidth={true}
+            />
+            <FormsyText
+              name="password"
+              required
+              hintText="Password"
+              floatingLabelText="Your Password"
+              fullWidth={true}
+              type="password"
+            />
+            <RaisedButton
+              style={submitStyle}
+              type="submit"
+              label="Login"
+              fullWidth={true}
+            />
+          </Formsy.Form>
+          <br />
+          <FlatButton onTouchTap={this.signOut} label="Signout" />
+        </Paper>
+        <br />
+        <RaisedButton onTouchTap={this.showNotification} label="Show Notification" />
+        <ReactMaterialUiNotifications
+            desktop={true}
+            transitionName={{
+              leave: 'dummy',
+              leaveActive: 'fadeOut',
+              appear: 'dummy',
+              appearActive: 'zoomInUp'
+            }}
+            transitionAppear={true}
+            transitionLeave={true}
+          />
       </div>
+      </MuiThemeProvider>
     );
   }
 }
