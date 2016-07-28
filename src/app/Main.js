@@ -3,7 +3,6 @@
  * which incorporates components provided by Material-UI.
  */
 import React, {Component} from 'react';
-import {deepOrange500} from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -19,14 +18,12 @@ class Main extends Component {
 
   render() {
     return (
-      <div>
-        <MuiThemeProvider muiTheme={muiTheme}>
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <div>
           <Header />
-        </MuiThemeProvider>
-        <MuiThemeProvider muiTheme={muiTheme}>
           <ListSongs />
-        </MuiThemeProvider>
-      </div>
+        </div>
+      </MuiThemeProvider>
     );
   }
 }

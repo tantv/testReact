@@ -1,19 +1,18 @@
 import React from 'react';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Paper from 'material-ui/Paper';
 import FlatButton from 'material-ui/FlatButton';
 
 import Formsy from 'formsy-react';
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
-import MenuItem from 'material-ui/MenuItem';
 import { FormsyCheckbox, FormsyDate, FormsyRadio, FormsyRadioGroup,
     FormsySelect, FormsyText, FormsyTime, FormsyToggle } from 'formsy-material-ui/lib';
 
-import ReactMaterialUiNotifications from '../components/ReactMaterialUiNotifications'
-import Message from 'material-ui/svg-icons/communication/message'
-import {deepOrange500} from 'material-ui/styles/colors'
-import moment from 'moment'
+import ReactMaterialUiNotifications from '../components/ReactMaterialUiNotifications';
+import Message from 'material-ui/svg-icons/communication/message';
+import {deepOrange500} from 'material-ui/styles/colors';
+import moment from 'moment';
 
 import FbConfig from '../components/FbConfig';
 
@@ -27,9 +26,15 @@ FbConfig.auth().onAuthStateChanged((user) => {
   }
 });
 
+const muiTheme = getMuiTheme();
+
 export default class Auths extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      count: 0
+    }
   }
 
   signInWithEmail = (data) => {
@@ -82,14 +87,18 @@ export default class Auths extends React.Component {
   }
 
   showNotification = () => {
-    console.log('xxxxxxxxxxx');
     ReactMaterialUiNotifications.showNotification({
       title: 'Title',
-      additionalText: `Some message to be displayed`,
+      additionalText: `Some message to be displayed ${this.state.count}`,
       icon: <Message />,
       iconBadgeColor: deepOrange500,
       overflowText: "joe@gmail.com",
-      timestamp: moment().format('h:mm A')
+      timestamp: moment().format('h:mm A'),
+      autoHide: 10
+    })
+    // update notifications count
+    this.setState({
+      count: ++this.state.count
     })
   } 
 
@@ -113,43 +122,44 @@ export default class Auths extends React.Component {
     let {paperStyle, switchStyle, submitStyle } = this.styles;
     let { emailError, passwordError} = this.errorMessages;
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme()}>
-      <div>
-        <Paper style={paperStyle}>
-          <Formsy.Form
-            ref="form"
-            onValidSubmit={this.signInWithEmail}
-          >
-            <FormsyText
-              name="email"
-              validations="isEmail"
-              validationError={emailError}
-              required
-              hintText="Email"
-              floatingLabelText="Your Email"
-              fullWidth={true}
-            />
-            <FormsyText
-              name="password"
-              required
-              hintText="Password"
-              floatingLabelText="Your Password"
-              fullWidth={true}
-              type="password"
-            />
-            <RaisedButton
-              style={submitStyle}
-              type="submit"
-              label="Login"
-              fullWidth={true}
-            />
-          </Formsy.Form>
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <div>
+          <Paper style={paperStyle}>
+            <Formsy.Form
+              ref="form"
+              onValidSubmit={this.signInWithEmail}
+            >
+              <FormsyText
+                name="email"
+                validations="isEmail"
+                validationError={emailError}
+                required
+                hintText="Email"
+                floatingLabelText="Your Email"
+                fullWidth={true}
+              />
+              <FormsyText
+                name="password"
+                required
+                hintText="Password"
+                floatingLabelText="Your Password"
+                fullWidth={true}
+                type="password"
+              />
+              <RaisedButton
+                style={submitStyle}
+                type="submit"
+                label="Login"
+                fullWidth={true}
+              />
+            </Formsy.Form>
+            <br />
+            <FlatButton onTouchTap={this.signOut} label="Signout" />
+          </Paper>
           <br />
-          <FlatButton onTouchTap={this.signOut} label="Signout" />
-        </Paper>
-        <br />
-        <RaisedButton onTouchTap={this.showNotification} label="Show Notification" />
-        <ReactMaterialUiNotifications
+          <RaisedButton onTouchTap={this.showNotification.bind()} label="Show Notification" />
+
+          <ReactMaterialUiNotifications
             desktop={true}
             transitionName={{
               leave: 'dummy',
@@ -160,7 +170,7 @@ export default class Auths extends React.Component {
             transitionAppear={true}
             transitionLeave={true}
           />
-      </div>
+        </div>
       </MuiThemeProvider>
     );
   }
